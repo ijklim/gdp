@@ -14,10 +14,12 @@ const BAR_OFFSET = 5;
 Vue.component('d3-bar-chart', {
   template: `
     <div
-      class="elevation-5 pt-5"
-      style="height:700px; width:1100px; margin:auto;"
-      :id="id"
-    />
+      class="elevation-5 pt-4"
+      style="height:700px; width:1100px; margin:auto; background:white;"
+    >
+      <h2 class="mb-4">{{ appName }}</h2>
+      <div :id="id" />
+    </div>
   `,
   // svg cannot be property by itself, changes object type during assignment, within d3 object is fine
   data () {
@@ -31,6 +33,10 @@ Vue.component('d3-bar-chart', {
     }
   },
   props: {
+    appName: {
+      type: String,
+      default: ''
+    },
     d3Data: {
       type: Object,
       default: () => {}
