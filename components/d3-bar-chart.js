@@ -1,7 +1,7 @@
 const WRAPPER = {
   width: 1100,
   height: 700,
-  padding: 50,
+  padding: 60,
   background: '#fff'
 }
 
@@ -17,9 +17,9 @@ const CANVAS = {
 const CHART = {
   width: WRAPPER.width - WRAPPER.padding * 2 - CANVAS.margin.right - CANVAS.margin.left,
   height: WRAPPER.height - WRAPPER.padding * 2 - CANVAS.margin.top - CANVAS.margin.bottom,
-  background: '#FFF3E0',
-  barColor: '#FFA726',
-  barOffset: 0.2
+  background: '#E3F2FD',
+  barColor: '#64B5F6',
+  barOffset: 0
 }
 
 Vue.component('d3-bar-chart', {
@@ -28,18 +28,18 @@ Vue.component('d3-bar-chart', {
       class="elevation-5 pt-4"
       :style="wrapperStyles"
     >
-      <h2 class="mb-4">{{ appName }}</h2>
+      <h2 class="mb-4 display-1">{{ appName }}</h2>
       <div :id="id" />
     </div>
   `,
-  // svg cannot be property by itself, changes object type during assignment, within d3 object is fine
+  // svg cannot be property by itself, changes object type during assignment, within ddd object is fine
   data () {
     return {
       axis: {
         x: {},
         y: {}
       },
-      d3: {},
+      ddd: {},
       id: 'd3-' + Math.round(Math.random() * 1000000)
     }
   },
@@ -77,7 +77,7 @@ Vue.component('d3-bar-chart', {
                             .paddingOuter(0)
                             .range([0, CHART.width]);
       // transform(x, y) specifies where x axis begins, drawn from left to right
-      let xGuide = this.d3.svg.append('g')
+      let xGuide = this.ddd.svg.append('g')
                               .attr('transform', `translate(${CANVAS.margin.left}, ${CANVAS.margin.top + CHART.height})`)
                               .call(this.axis.x.ticks);
       
@@ -94,11 +94,12 @@ Vue.component('d3-bar-chart', {
                             .domain([0, d3.max(this.d3Data.y)])
                             .range([0, CHART.height]);
       // translate(x, y) specifies where y axis begins, drawn from top to bottom
-      let yGuide = this.d3.svg.append('g')
+      let yGuide = this.ddd.svg.append('g')
                               .attr('transform', `translate(${CANVAS.margin.left}, ${CANVAS.margin.top})`)
                               .call(this.axis.y.ticks);
 
       this.draw();
+      this.addListeners();
     }
   },
   methods: {
@@ -107,14 +108,14 @@ Vue.component('d3-bar-chart', {
      */
     draw () {
       // translate(x, y) specifies where bar begins, +1 to move right of y axis
-      this.d3.chart = this.d3.svg.append('g')
+      this.ddd.chart = this.ddd.svg.append('g')
                                  .attr('transform', `translate(${CANVAS.margin.left + 1}, 0)`)
                                  .selectAll('rect')
                                  .data(this.d3Data.y)
                                  .enter()
                                  .append('rect');
       
-      this.d3.chart
+      this.ddd.chart
         .attr('fill', (data, index) => {
           return CHART.barColor
         })
@@ -124,13 +125,37 @@ Vue.component('d3-bar-chart', {
         .attr('y', CHART.height + CANVAS.margin.top);
       
       // .delay sets speed of drawing
-      this.d3.chart
+      this.ddd.chart
         .transition()
-        .delay((data, index) => index * 10)
+        .delay((data, index) => index * 5)
         .duration(100)
         .ease(d3.easeCircleIn)
         .attr('y', data => CHART.height - this.axis.y.scale(data) + CANVAS.margin.top)
         .attr('height', data => this.axis.y.scale(data));
+    },
+    addListeners () {
+      let component = this;
+      this.ddd.chart
+        .on('mouseover', function(yData, index) {
+          let tooltipX = d3.event.pageX + 5;
+          let tooltipY = d3.event.pageY - 100;
+          component.ddd.tooltip.html(component.d3Data.tooltip[index])
+            .style('left', `${tooltipX}px`)
+            .style('top', `${tooltipY}px`)
+            .style('opacity', 1);
+          
+          d3.select(this)
+            .style('opacity', .5)
+        })
+        .on('mouseout', function(data) {
+          component.ddd.tooltip.html('')
+            .style('opacity', 0);
+          
+          d3.select(this)
+            .transition()
+            .duration(300)
+            .style('opacity', 1)
+        });
     }
   },
   mounted () {
@@ -141,7 +166,10 @@ Vue.component('d3-bar-chart', {
         .attr('width', CHART.width + CANVAS.margin.right + CANVAS.margin.left)
         .attr('height', CHART.height + CANVAS.margin.top + CANVAS.margin.bottom)
         .style('background', CHART.background);
-    this.d3.svg = d3.select(`#${this.id} svg`);
-    // console.table(this.d3.svg)
+    this.ddd.svg = d3.select(`#${this.id} svg`);
+    this.ddd.tooltip = d3.select('body')
+                         .append('div')
+                         .attr('class', 'tooltip elevation-3')
+                         .style('opacity', 0);
   }
 });
