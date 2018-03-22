@@ -1,4 +1,4 @@
-# Visualize Data with a d3.js Bar Chart, a freeCodeCamp project
+# Visualize Data with a d3.js Bar Chart
 
 <p align="center">
   <a href="https://ijklim.github.io/gdp/">
