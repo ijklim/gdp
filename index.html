@@ -5,7 +5,7 @@
   <meta charset='utf-8'>
   <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
 
-  <title>GDP using D3 v.2</title>
+  <title>GDP using D3 v.3</title>
 
   <link href="https://fonts.googleapis.com/css?family=Material+Icons|Raleway" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vuetify/1.0.8/vuetify.min.css">
@@ -21,6 +21,18 @@
       line-height: 2rem;
       text-align: center;
     }
+
+    /* Full screen background */
+    #app {
+      /* Location of the image */
+      background-image: url(https://raw.githubusercontent.com/ijklim/gdp/gh-pages/assets/img/bg.jpg);
+
+      /* Background image is centered vertically and horizontally at all times */
+      background-position: top left;
+
+      /* Background image doesn't tile */
+      background-repeat: repeat;
+    }
   </style>
 </head>
 
@@ -31,11 +43,8 @@
     <v-container mt-4 fluid>
       <v-layout wrap justify-center>
         <v-flex xs12 class="mb-5">
-          <h1 v-text="appName"></h2>
-        </v-flex>
-
-        <v-flex xs12 class="mb-5">
           <d3-bar-chart
+            :app-name="appName"
             :d3-data="d3Data"
           ></d3-bar-chart>
         </v-flex>
@@ -75,12 +84,6 @@
               x: d3DataX,
               y: d3DataY
             };
-            // this.d3DataY = d3DataY;
-            // this.d3DataX = d3DataX;
-            // this.d3DataY = [1, 2, 3];
-            // this.d3DataX = [10, 20, 30];
-            // console.log('toremove', this.d3DataX)
-            // this.createChart();
           })
           .catch(error => {
             console.error("Error encountered", error);
